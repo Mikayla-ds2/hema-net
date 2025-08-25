@@ -1,14 +1,39 @@
 import streamlit as st
 from PIL import Image
 import torch
+import torchvision
+import torch.nn as nn
 from torchvision import transforms
 
-model = torch.load('best_bloodmnist_model.pth', map_location = torch.device('mps'))
+class ConvNet(nn.Module):
+    def __init__(self, dropout_rate = 0.5):
+        super(ConvNet, self).__init__()
+        self.resnet = torchvision.models.resnet18(weights='IMAGENET1K_V1')
+        
+        self.resnet.fc = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout_rate),
+            nn.Linear(256, 8)
+            # this will produce the logits; only use activation functions in hidden layers
+        )
+        
+    def forward(self, x):
+        return self.resnet(x)
+
+model = ConvNet()
+
+device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+
+checkpoint = torch.load("best_bloodmnist_model.pth", map_location = device)
+model.load_state_dict(checkpoint['model_state_dict'])
+model.to(device)
 model.eval()
 
 data_transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5], std=[0.5])]) # standard for medmnist images
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]) # standard for medmnist images
 
 labels = [
     'Basophil',
@@ -29,8 +54,10 @@ if uploaded_file:
     st.image(image,caption = 'Uploaded image', use_column_width = True)
 
     if st.button('Classify'):
-        img_tensor = data_transform(image).unsqueeze(0)
+        img_tensor = data_transform(image).unsqueeze(0).to(device)
         with torch.no_grad():
-           output =  model(img_tensor)
-           _, predicted = torch.max(output, 1)
-           st.success(f"Prediction: {labels[predicted.item()]}")
+            output = model(img_tensor)
+            probs = torch.nn.functional.softmax(output, dim=1)
+            confidence = torch.max(probs).item()
+            _, predicted = torch.max(output, 1)
+            st.success(f"Prediction: **{labels[predicted.item()]}** ({confidence:.2%} confidence)")

@@ -34,9 +34,9 @@ I'm super passionate about working in precision medicine using computational met
 # Future Plans (Pt. 2: TensorFlow/Keras Edition)
 
 I plan to rebuild hema-net using TensorFlow/Keras to:
-	- Compare training time, syntax differences, and results
-	- Practice saving/loading models in both frameworks
-	- Use the same dataset and architecture for a clean side-by-side comparison
+- Compare training time, syntax differences, and results
+- Practice saving/loading models in both frameworks
+- Use the same dataset and architecture for a clean side-by-side comparison
 
 This will be submitted as a second project!
 

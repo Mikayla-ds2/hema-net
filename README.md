@@ -45,3 +45,4 @@ This will be submitted as a second project!
 This project is part of my Athena portfolio and represents 20+ hours of hands-on work and research. It was my first deep dive into PyTorch and image classification, and I’m proud of how far it’s come.
 
 If you’re just getting into ML or bioinformatics, I hope HEMA-Net helps you get inspired too.
+[![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)

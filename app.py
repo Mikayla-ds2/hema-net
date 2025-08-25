@@ -4,6 +4,7 @@ import torch
 import torchvision
 import torch.nn as nn
 from torchvision import transforms
+from model import ConvNet
 
 class ConvNet(nn.Module):
     def __init__(self, dropout_rate = 0.5):
@@ -57,7 +58,12 @@ if uploaded_file:
         img_tensor = data_transform(image).unsqueeze(0).to(device)
         with torch.no_grad():
             output = model(img_tensor)
-            probs = torch.nn.functional.softmax(output, dim=1)
-            confidence = torch.max(probs).item()
-            _, predicted = torch.max(output, 1)
-            st.success(f"Prediction: **{labels[predicted.item()]}** ({confidence:.2%} confidence)")
+            probs = torch.nn.functional.softmax(output, dim=1).squeeze()
+            
+            confidence, predicted_idx = torch.max(probs, dim = 0)
+            predicted_label = labels[predicted_idx.item()]
+            st.success(f"Prediction: **{predicted_label}** ({confidence.item():.2%} confidence)")
+            
+            st.subheader("Confidence for all classes:")
+            prob_dict = {label: float(prob) for label, prob in zip(labels, probs)}
+            st.bar_chart(prob_dict)

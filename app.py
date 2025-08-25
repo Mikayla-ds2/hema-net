@@ -52,7 +52,7 @@ st.title("hema-net classifier 🧬")
 uploaded_file = st.file_uploader("Upload a cell image", type = ["png", "jpg", "jpeg"])
 if uploaded_file:
     image = Image.open(uploaded_file).convert('RGB')
-    st.image(image,caption = 'Uploaded image', use_column_width = True)
+    st.image(image,caption = 'Uploaded image', use_container_width = True)
 
     if st.button('Classify'):
         img_tensor = data_transform(image).unsqueeze(0).to(device)
